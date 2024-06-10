@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProyectoManhattan</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    ul { list-style-type: none; padding: 0; }
+    li { padding: 8px; margin-bottom: 10px; border-radius: 5px; }
+    #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 4rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+    #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+    #input:focus { outline: none; }
+    #form > button { background: #333; border: none; padding: 0rem 4rem; margin: 0.5rem; border-radius: 3px; outline: none; color: #fff; }
+  </style>
+</head>
+<body>
+  <script>
+    const userName = prompt('Ingrese su nombre.')
+  </script>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="input" autocomplete="off" placeholder="Realiza tu pedido aquí..." />
+    <button>Enviar</button>
+  </form>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('chat message', (data) => {
+      const item = document.createElement('li');
+      item.textContent = `${data.fecha} - ${data.msg}`;
+      item.style.backgroundColor = data.color;
+      document.getElementById('messages').appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+    
+    document.getElementById('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('input');
+      if (input.value) {
+        const fecha = Date().toLocaleString().slice(0,25);
+        socket.emit('chat message', { userName, msg: input.value, fecha });
+        input.value = '';
+      }
+    });
+  </script>
+</body>
+</html>

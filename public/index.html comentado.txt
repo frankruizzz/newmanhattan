@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8"> <!-- Especifica la codificación de caracteres del documento -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Configura la ventana gráfica para que se adapte a la pantalla del dispositivo -->
+  <title>Chat en línea</title> <!-- Título de la página -->
+  <style>
+    /* Define los estilos CSS para los elementos de la página */
+    body { font-family: Arial, sans-serif; } /* Establece la fuente por defecto */
+    ul { list-style-type: none; padding: 0; } /* Elimina los puntos de lista y el padding del elemento ul */
+    li { padding: 8px; margin-bottom: 10px; border-radius: 5px; } /* Estilo para los elementos de lista */
+    input { padding: 10px; width: calc(100% - 22px); margin-top: 10px; border-radius: 5px; border: 1px solid #ccc; } /* Estilo para el campo de entrada */
+  </style>
+</head>
+
+<body>
+  <ul id="messages"></ul> <!-- Lista no ordenada para mostrar los mensajes -->
+  <form id="form" action="">
+    <input id="input" autocomplete="off" placeholder="Escribe un mensaje..." /> <!-- Campo de entrada para el mensaje -->
+    <button>Enviar</button> <!-- Botón para enviar el mensaje -->
+  </form>
+  <script src="/socket.io/socket.io.js"></script> <!-- Importa la biblioteca Socket.IO del servidor -->
+
+  <script>
+    const socket = io(); // Conecta al servidor Socket.IO
+
+    // Escuchar el evento 'chat message' y agregarlo a la lista de mensajes
+    socket.on('chat message', (data) => {
+      const item = document.createElement('li'); // Crea un nuevo elemento de lista
+      item.textContent = data.msg; // Establece el contenido del elemento de lista con el mensaje recibido
+      item.style.backgroundColor = data.color; // Asigna el color de fondo del mensaje
+      document.getElementById('messages').appendChild(item); // Agrega el nuevo elemento de lista a la lista de mensajes
+      window.scrollTo(0, document.body.scrollHeight); // Desplaza la ventana hasta la parte inferior de la página
+    });
+
+    // Manejar el envío de mensajes
+    document.getElementById('form').addEventListener('submit', (e) => {
+      e.preventDefault(); // Previene la acción por defecto del formulario (recargar la página)
+      const input = document.getElementById('input'); // Obtiene el campo de entrada del mensaje
+      if (input.value) { // Verifica que el campo de entrada no esté vacío
+        socket.emit('chat message', input.value); // Envía el mensaje al servidor
+        input.value = ''; // Limpia el campo de entrada
+      }
+    });
+  </script>
+</body>
+
+</html>
+
+
+
+Explicación General
+HTML:
+
+El documento HTML se estructura con las etiquetas estándar <html>, <head>, y <body>.
+En <head>, se establece la codificación de caracteres, las configuraciones de la ventana gráfica y los estilos CSS internos para la página.
+<body> contiene una lista (<ul>) para mostrar los mensajes y un formulario (<form>) con un campo de entrada (<input>) y un botón (<button>) para enviar mensajes.
+CSS:
+
+body: Se establece la fuente por defecto.
+ul: Se eliminan los puntos de lista y el padding.
+li: Se define el padding, el margen inferior y el borde redondeado para los elementos de lista.
+input: Se define el padding, el ancho, el margen superior, el borde redondeado y el borde del campo de entrada.
+JavaScript:
+
+const socket = io();: Conecta al servidor Socket.IO.
+socket.on('chat message', (data) => {...}): Escucha el evento 'chat message' del servidor y agrega el mensaje recibido a la lista de mensajes. El mensaje se muestra con el color de fondo asignado al usuario que envió el mensaje.
+document.getElementById('form').addEventListener('submit', (e) => {...}): Maneja el envío de mensajes. Previene que el formulario recargue la página, envía el mensaje al servidor y limpia el campo de entrada después de enviar el mensaje.
